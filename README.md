@@ -1,7 +1,7 @@
 # SimpleTable
 API to work with 2 dimensional data. Data from CSV or a table
 
-# Building a simple table
+## Building a simple table
   ```
   Table table = new SimpleTable("tableWithData")
                   .withColumns("A", "B", "C", "D")
@@ -9,15 +9,15 @@ API to work with 2 dimensional data. Data from CSV or a table
                   .addRow(new SimpleRow("a0000000001", "b0000000001", "c0000000001", "1"))
                   .addRow(new SimpleRow("a0000000002", "b0000000002", "c0000000002", "2"))
   ```
-# Write the table as a CSV file
+## Write the table as a CSV file
   ```
   table.writeAsCsv(new File("/var/tmp", "tableWithData.csv"))
   ```
-# Save the as a html file
+## Save the as a html file
   ```
   table.writeAsHtml(new File("/var/tmp", "tableWithData.html"));
   ```
-# The AVERAGE, COUNT, COUNTALL, MAX, MIN, SUM Aggregate functions
+## The AVERAGE, COUNT, COUNTALL, MAX, MIN, SUM Aggregate functions
   ```
   Table input = new SimpleTable("Sample").addColumn("Count")
                 .addRow(new SimpleRow("1"))
