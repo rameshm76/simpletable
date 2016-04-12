@@ -81,7 +81,7 @@ public class SimpleTables {
         left.getRows().forEach(leftRow -> {
             String key = leftKeyGenerator.apply(leftRow);
             Collection<Row> rightRows = data.get(key);
-            System.out.println(rightRows);
+
             if (rightRows == null || rightRows.isEmpty()) {
                 Row newRow = new SimpleRow();
                 result.getColumnNames().forEach(columnName -> {
