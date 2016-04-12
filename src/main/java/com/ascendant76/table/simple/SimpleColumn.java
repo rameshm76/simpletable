@@ -5,6 +5,7 @@ import com.ascendant76.table.core.ColumnType;
 import com.ascendant76.util.Utils;
 import com.google.common.base.MoreObjects;
 
+import javax.annotation.Nonnull;
 import java.util.Objects;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -33,16 +34,19 @@ public class SimpleColumn implements Column {
         this(name, Utils.capitalize(name), type);
     }
 
+    @Nonnull
     @Override
     public final String getName() {
         return name;
     }
 
+    @Nonnull
     @Override
     public final String getTitle() {
         return title;
     }
 
+    @Nonnull
     @Override
     public final ColumnType getType() {
         return type;

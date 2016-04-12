@@ -2,13 +2,15 @@ package com.ascendant76.table.simple;
 
 import com.ascendant76.table.core.Row;
 import com.google.common.collect.Lists;
+import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.CharUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 
 import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
 
@@ -52,7 +54,7 @@ public class SimpleRowTest {
     @Test
     public void rowWithCellTest() {
         ArrayList<String> cells = Lists.newArrayList("1", "2.0", "A");
-        Row row = new SimpleRow().withCells(cells).withCell("true");
+        Row row = new SimpleRow().withCells(cells).addCell("true");
         verify(Lists.newArrayList("1", "2.0", "A", "true").toArray(new String[cells.size()]), row);
     }
 
@@ -60,13 +62,13 @@ public class SimpleRowTest {
         assertThat(row.getCells(), equalTo(Arrays.asList(cells)));
         assertThat(row.getCellsAsArray(), equalTo(cells));
         assertThat(row.getCell(0), equalTo("1"));
-        assertThat(row.getCellAsBoolean(3), equalTo(true));
-        assertThat(row.getCellAsChar(2), equalTo('A'));
-        assertThat(row.getCellAsInteger(0), equalTo(1));
-        assertThat(row.getCellAsDouble(1), equalTo(2.0d));
-        assertThat(row.getCellAsFloat(1), equalTo(2.0f));
-        assertThat(row.getCellAsLong(0), equalTo(1L));
-        assertThat(row.getCellAsShort(0) == 1, is(true));
+        assertThat(row.getCell(3, BooleanUtils::toBoolean), equalTo(true));
+        assertThat(row.getCell(2, CharUtils::toChar), equalTo('A'));
+        assertThat(row.getCell(0, NumberUtils::toInt), equalTo(1));
+        assertThat(row.getCell(1, NumberUtils::toDouble), equalTo(2.0d));
+        assertThat(row.getCell(1, NumberUtils::toFloat), equalTo(2.0f));
+        assertThat(row.getCell(0, NumberUtils::toLong), equalTo(1L));
+        assertThat(row.getCell(0, NumberUtils::toShort), is(Short.valueOf("1")));
     }
 
 }

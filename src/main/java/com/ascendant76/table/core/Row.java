@@ -4,6 +4,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.List;
+import java.util.function.Function;
 
 /**
  * The Row represent data as a composition of cells. For simplicity, we store the information as Strings.
@@ -23,7 +24,7 @@ public interface Row {
 
     Row withCells(@Nonnull Collection<String> values);
 
-    Row withCell(@Nullable String value);
+    Row addCell(@Nullable String value);
 
     // Query methods about the state of the row
     boolean isEmpty();
@@ -35,25 +36,7 @@ public interface Row {
     String getCell(int position);
 
     @Nullable
-    Integer getCellAsInteger(int position);
-
-    @Nullable
-    Long getCellAsLong(int position);
-
-    @Nullable
-    Short getCellAsShort(int position);
-
-    @Nullable
-    Double getCellAsDouble(int position);
-
-    @Nullable
-    Float getCellAsFloat(int position);
-
-    @Nullable
-    Boolean getCellAsBoolean(int position);
-
-    @Nullable
-    Character getCellAsChar(int position);
+    <R> R getCell(int position, Function<String, R> converter);
 
     @Nonnull
     List<String> getCells();

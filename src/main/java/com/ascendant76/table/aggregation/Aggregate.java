@@ -14,7 +14,6 @@ import com.google.common.collect.Maps;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 
 public class Aggregate {
 
@@ -31,14 +30,14 @@ public class Aggregate {
     public final Table getResult() {
         Map<Row, LinkedHashMap<String, AggregateResult>> aggregate = Maps.newLinkedHashMap();
 
-        for (Row currentRow : inputTable.getRows()) {
+        inputTable.getRows().forEach(currentRow -> {
             Row key = this.getKey(currentRow);
-            LinkedHashMap<String, AggregateResult> value = this.getValue(currentRow, aggregate.get(key));
-            aggregate.put(key, value);
-        }
+            aggregate.put(key, getValue(currentRow, aggregate.get(key)));
+        });
 
         Table aggregatedTable = new SimpleTable(String.format("%sAggregate", inputTable.getName()));
         Arrays.stream(keyColumnNames).forEach(keyColumnName -> aggregatedTable.addColumn(inputTable.getColumn(keyColumnName)));
+
         aggregateColumns.entries().stream().forEach(
                 entry -> aggregatedTable.addColumn(
                         new SimpleColumn(
@@ -48,14 +47,10 @@ public class Aggregate {
                 )
         );
 
-        Row key;
-        for (Entry<Row, LinkedHashMap<String, AggregateResult>> entry : aggregate.entrySet()) {
-            key = entry.getKey();
-            for (Entry<String, AggregateResult> value : entry.getValue().entrySet()) {
-                key.withCell(value.getValue().result().toPlainString());
-            }
-            aggregatedTable.addRow(key);
-        }
+        aggregate.entrySet().forEach(entry -> {
+            entry.getValue().entrySet().forEach(value -> entry.getKey().addCell(value.getValue().result().toPlainString()));
+            aggregatedTable.addRow(entry.getKey());
+        });
 
         return aggregatedTable;
     }
@@ -63,7 +58,7 @@ public class Aggregate {
 
     private Row getKey(Row currentRow) {
         Row newRow = new SimpleRow();
-        Arrays.stream(keyColumnNames).forEach(keyColumnName -> newRow.withCell(currentRow.getCell(inputTable.getColumnPosition(keyColumnName))));
+        Arrays.stream(keyColumnNames).forEach(keyColumnName -> newRow.addCell(currentRow.getCell(inputTable.getColumnPosition(keyColumnName))));
 
         return newRow;
     }
@@ -71,15 +66,15 @@ public class Aggregate {
     private LinkedHashMap<String, AggregateResult> getValue(Row currentRow, Map<String, AggregateResult> existingValue) {
         LinkedHashMap<String, AggregateResult> result = Maps.newLinkedHashMap();
 
-        String aggregateColumn;
-        for (Entry<String, AggregateType> entry : aggregateColumns.entries()) {
-            aggregateColumn = String.format("%s(%s)", Utils.capitalize(entry.getValue().name()), entry.getKey());
+        aggregateColumns.entries().forEach(entry -> {
+            String aggregateColumn = String.format("%s(%s)", Utils.capitalize(entry.getValue().name()), entry.getKey());
             if (null == existingValue) {
                 result.put(aggregateColumn, entry.getValue().result().add(currentRow.getCell(inputTable.getColumnPosition(entry.getKey()))));
             } else {
                 result.put(aggregateColumn, existingValue.get(aggregateColumn).add(currentRow.getCell(inputTable.getColumnPosition(entry.getKey()))));
             }
-        }
+        });
+
         return result;
     }
 

@@ -17,7 +17,6 @@ import java.nio.charset.Charset;
 import java.util.Set;
 
 import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
 
 public class SimpleTableTest {
 
@@ -26,6 +25,22 @@ public class SimpleTableTest {
             new SimpleRow("a0000000001", "b0000000001", "c0000000001", "1"),
             new SimpleRow("a0000000002", "b0000000002", "c0000000002", "2")
     };
+
+    static Table employee = new SimpleTable("Employee").withColumns("Name", "DeptId").withRows(
+            new SimpleRow("Rafferty", "31"),
+            new SimpleRow("Jones", "33"),
+            new SimpleRow("Heisenberg", "33"),
+            new SimpleRow("Robinson", "34"),
+            new SimpleRow("Smith", "34"),
+            new SimpleRow("Williams", null)
+    ).writeAsHtml(new File("/var/tmp", "Employee.html"));
+
+    static Table department = new SimpleTable("Department").withColumns("DeptId", "DepartmentName").withRows(
+            new SimpleRow("31", "Sales"),
+            new SimpleRow("33", "Engineering"),
+            new SimpleRow("34", "Clerical"),
+            new SimpleRow("35", "Marketing")
+    ).writeAsHtml(new File("/var/tmp", "Department.html"));
 
     @Test
     public final void emptyTableWillHaveTableDetails() {
@@ -83,7 +98,7 @@ public class SimpleTableTest {
     @Test
     public final void tableToHtmlFile() {
         File htmlFile = new File("/var/tmp", "tableToHtmlFile.html");
-        Table table = new SimpleTable("tableToHtml")
+        new SimpleTable("tableToHtml")
                 .withColumns("column A", "SimpleColumn B", "column c").addColumn(new SimpleColumn("SimpleColumn D", ColumnType.NUMBER))
                 .withRows(SIMPLE_ROWs)
                 .writeAsHtml(htmlFile);
@@ -101,7 +116,7 @@ public class SimpleTableTest {
                 .addRow(new SimpleRow("1"))
                 .addRow(new SimpleRow("2"))
                 .addRow(new SimpleRow("3"))
-                .addRow(new SimpleRow().withCell(null)).writeAsHtml(htmlFile);
+                .addRow(new SimpleRow().addCell(null)).writeAsHtml(htmlFile);
 
         ListMultimap<String, AggregateType> aggregateColumns = LinkedListMultimap.create();
         aggregateColumns.put("Count", AggregateType.AVERAGE);
@@ -111,12 +126,12 @@ public class SimpleTableTest {
         aggregateColumns.put("Count", AggregateType.MIN);
         aggregateColumns.put("Count", AggregateType.SUM);
 
-        Table result = input.aggregate(null, aggregateColumns).writeAsHtml(htmlFile);
+        input.aggregate(null, aggregateColumns).writeAsHtml(htmlFile);
     }
 
     @Test
     public final void testAggregate2() {
-        File htmlFile = new File("/var/tmp" , "testAggregate2.html");
+        File htmlFile = new File("/var/tmp", "testAggregate2.html");
         Table input = new SimpleTable("testAggregate2").withColumns("Name", "Count")
                 .addRow(new SimpleRow("A", "1"))
                 .addRow(new SimpleRow("A", "2"))
@@ -131,6 +146,36 @@ public class SimpleTableTest {
         aggregateColumns.put("Count", AggregateType.MIN);
         aggregateColumns.put("Count", AggregateType.SUM);
 
-        Table result = input.aggregate(new String[]{"Name"}, aggregateColumns).writeAsHtml(htmlFile);
+        input.aggregate(new String[]{"Name"}, aggregateColumns).writeAsHtml(htmlFile);
+    }
+
+    @Test
+    public void testInnerJoin() {
+        SimpleTables.innerJoin(
+                employee,
+                row -> row.getCell(1),
+                department,
+                row -> row.getCell(0)
+        ).writeAsHtml(new File("/var/tmp", "testInnerJoin.html"));
+    }
+
+    @Test
+    public void testLeftOuterJoin() {
+        SimpleTables.leftOuterJoin(
+                employee,
+                row -> row.getCell(1),
+                department,
+                row -> row.getCell(0)
+        ).writeAsHtml(new File("/var/tmp", "testLeftOuterJoin.html"));
+    }
+
+    @Test
+    public void testRightOuterJoin() {
+        SimpleTables.rightOuterJoin(
+                employee,
+                row -> row.getCell(1),
+                department,
+                row -> row.getCell(0)
+        ).writeAsHtml(new File("/var/tmp", "testRightOuterJoin.html"));
     }
 }

@@ -4,14 +4,14 @@ import com.ascendant76.table.core.Row;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
-import org.apache.commons.lang3.BooleanUtils;
-import org.apache.commons.lang3.CharUtils;
-import org.apache.commons.lang3.math.NumberUtils;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Function;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -39,7 +39,7 @@ public class SimpleRow implements Row {
     }
 
     @Override
-    public final Row withCells(String... values) {
+    public final Row withCells(@Nonnull String... values) {
         checkNotNull(values);
         boolean status = Collections.addAll(this.getCells(), values);
         Preconditions.checkArgument(status);
@@ -47,7 +47,7 @@ public class SimpleRow implements Row {
     }
 
     @Override
-    public final Row withCells(Collection<String> values) {
+    public final Row withCells(@Nonnull Collection<String> values) {
         checkNotNull(values);
         boolean status = this.getCells().addAll(values);
         Preconditions.checkArgument(status);
@@ -55,7 +55,7 @@ public class SimpleRow implements Row {
     }
 
     @Override
-    public final Row withCell(String value) {
+    public final Row addCell(String value) {
         boolean status = this.getCells().add(value);
         Preconditions.checkArgument(status);
         return this;
@@ -76,46 +76,20 @@ public class SimpleRow implements Row {
         return this.getCells().get(position);
     }
 
+    @Nullable
     @Override
-    public Integer getCellAsInteger(int position) {
-        return NumberUtils.toInt(this.getCell(position));
+    public <R> R getCell(int position, Function<String, R> converter) {
+        checkNotNull(converter);
+        return converter.apply(getCell(position));
     }
 
-    @Override
-    public Long getCellAsLong(int position) {
-        return NumberUtils.toLong(this.getCell(position));
-    }
-
-    @Override
-    public Short getCellAsShort(int position) {
-        return NumberUtils.toShort(this.getCell(position));
-    }
-
-    @Override
-    public Double getCellAsDouble(int position) {
-        return NumberUtils.toDouble(this.getCell(position));
-    }
-
-    @Override
-    public Float getCellAsFloat(int position) {
-        return NumberUtils.toFloat(this.getCell(position));
-    }
-
-    @Override
-    public Boolean getCellAsBoolean(int position) {
-        return BooleanUtils.toBoolean(this.getCell(position));
-    }
-
-    @Override
-    public Character getCellAsChar(int position) {
-        return CharUtils.toChar(this.cells.get(position));
-    }
-
+    @Nonnull
     @Override
     public final List<String> getCells() {
         return cells;
     }
 
+    @Nonnull
     @Override
     public final String[] getCellsAsArray() {
         return this.getCells().toArray(new String[this.getCells().size()]);

@@ -110,6 +110,8 @@ public interface Table {
     @Nonnull
     Set<Column> getColumns();
 
+    boolean hasColumn(@Nonnull String name);
+
     @Nonnull
     Column getColumn(int position);
 
