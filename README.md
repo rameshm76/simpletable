@@ -9,11 +9,11 @@ API to work with 2 dimensional data. Data from CSV or a table
                   .addRow(new SimpleRow("a0000000001", "b0000000001", "c0000000001", "1"))
                   .addRow(new SimpleRow("a0000000002", "b0000000002", "c0000000002", "2"))
   ```
-## Write the table as a CSV file
+## Save the table to a CSV file
   ```
   table.writeAsCsv(new File("/var/tmp", "tableWithData.csv"))
   ```
-## Save the as a html file
+## Save the to a html file
   ```
   table.writeAsHtml(new File("/var/tmp", "tableWithData.html"));
   ```
